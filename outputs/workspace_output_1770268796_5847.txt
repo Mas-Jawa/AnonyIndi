@@ -1,0 +1,14 @@
+Archive:  c4d757c9-4e7a-40e8-8cdf-83b9bf345a4e.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-01-27 22:43   .agent_hooks/
+        0  2026-01-27 22:43   .agent_hooks/startup/
+      251  2026-01-27 22:41   .agent_hooks/startup/_readme.txt
+     3188  2026-01-27 22:41   .agent_hooks/run_all_hooks.py
+        0  2026-01-27 22:43   .agent_hooks/shutdown/
+     8502  2026-01-27 22:41   .agent_hooks/shutdown/00_track_processes_on_ports.py
+      291  2026-01-27 22:41   .agent_hooks/shutdown/_readme.txt
+      445  2026-02-05 05:06   todo.md
+    16729  2026-02-05 05:06   index.html
+---------                     -------
+    29406                     9 files
