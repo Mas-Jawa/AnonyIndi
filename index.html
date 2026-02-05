@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackerIndonesia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Matrix Rain Background */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 2px solid #0f0;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 15px #0f0;
+        }
+
+        /* Main Container */
+        .main-container {
+            height: calc(100vh - 70px);
+            padding-top: 70px;
+            overflow: hidden;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            height: 100%;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Hero Section */
+        .hero-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0, 0 0 20px #0f0, 0 0 30px #0f0;
+            animation: glitch 1s infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes glitch {
+            0%, 100% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
+            50% { text-shadow: 0 0 10px #f00, 0 0 20px #f00; }
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            line-height: 1.8;
+            color: #0f0;
+        }
+
+        /* About Cards */
+        .about-cards {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .about-card {
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid #0f0;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        .about-card h3 {
+            color: #0f0;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .about-card p {
+            line-height: 1.8;
+            color: #0f0;
+            font-size: 1.1rem;
+        }
+
+        /* Hacker List */
+        .hacker-list {
+            list-style: none;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hacker-item {
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid #0f0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hacker-item:hover {
+            background: rgba(0, 100, 0, 0.5);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .hacker-name {
+            font-size: 1.3rem;
+            color: #0f0;
+        }
+
+        .hacker-stars {
+            color: #ff0;
+        }
+
+        /* Notification Box */
+        .notification-box {
+            background: rgba(0, 50, 0, 0.3);
+            border: 2px solid #0f0;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .notification-box p {
+            line-height: 1.8;
+            color: #0f0;
+            font-size: 1.2rem;
+        }
+
+        /* Page Titles */
+        .page-title {
+            font-size: 2.5rem;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        /* Profile Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-content {
+            max-width: 800px;
+            margin: 50px auto;
+            background: rgba(0, 30, 0, 0.9);
+            border: 2px solid #0f0;
+            padding: 40px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f00;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-radius: 5px;
+        }
+
+        .close-btn:hover {
+            background: #cc0000;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .profile-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #0f0;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            color: #0f0;
+            font-weight: bold;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        .profile-bio {
+            line-height: 1.8;
+            color: #0f0;
+            font-size: 1rem;
+        }
+
+        .profile-bio p {
+            margin: 15px 0;
+        }
+
+        .mission {
+            background: rgba(0, 100, 0, 0.3);
+            border: 1px solid #0f0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .mission h4 {
+            color: #0f0;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .mission p {
+            color: #0f0;
+            line-height: 1.6;
+        }
+
+        .encrypted-msg {
+            text-align: center;
+            padding: 40px;
+            color: #f00;
+            font-size: 1.5rem;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 2px solid #0f0;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #0f0;
+            z-index: 100;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .about-card {
+                padding: 20px;
+            }
+
+            .main-container {
+                height: calc(100vh - 120px);
+                padding-top: 120px;
+            }
+        }
+    </style>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button class="nav-btn active" onclick="showPage('beranda')">Beranda</button>
+        <button class="nav-btn" onclick="showPage('daftar-hacker')">Daftar hacker</button>
+        <button class="nav-btn" onclick="showPage('pemberitahuan')">Pemberitahuan</button>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Beranda Page -->
+        <div id="beranda" class="page active">
+            <div class="hero-content">
+                <h1>HACKERINDONESIA</h1>
+                <div class="about-cards">
+                    <div class="about-card">
+                        <h3>APA ITU ANONYMOUS</h3>
+                        <p>"Anonymous" artinya tanpa nama atau tidak diketahui identitasnya, merujuk pada seseorang atau sesuatu yang identitas aslinya dirahasiakan atau tidak dapat dikenali, sering digunakan dalam konteks online, peretasan (seperti kelompok peretas Anonymous), atau saat seseorang memberikan informasi atau sumbangan tanpa ingin diketahui namanya.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>APA ITU HACKER</h3>
+                        <p>Hacker (peretas) adalah individu atau kelompok dengan kemampuan teknis tinggi dalam pemrograman, jaringan, dan sistem komputer yang mengeksplorasi atau memanipulasi keamanan sistem. Tidak selalu jahat, hacker dapat bertujuan positif (meningkatkan keamanan) atau negatif (pencurian data/kejahatan siber), sehingga sering dikategorikan berdasarkan warna topi (etika) mereka.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>APA ITU JASA HACKING</h3>
+                        <p>Jasa hacking mengacu pada penawaran layanan yang melibatkan aktivitas menerobos atau mengeksploitasi sistem komputer, jaringan, situs web, atau akun digital untuk tujuan tertentu. Istilah ini memiliki konotasi ganda, tergantung pada konteks dan tujuan dari layanan tersebut.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daftar Hacker Page -->
+        <div id="daftar-hacker" class="page">
+            <h2 class="page-title">DAFTAR HACKER</h2>
+            <ul class="hacker-list">
+                <li class="hacker-item" onclick="showProfile(1)">
+                    <span class="hacker-name">MR.SwadoXtree</span>
+                    <span class="hacker-stars">⭐⭐⭐⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(2)">
+                    <span class="hacker-name">SytemNotFoud</span>
+                    <span class="hacker-stars">⭐⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(3)">
+                    <span class="hacker-name">Mas-JawaFenn</span>
+                    <span class="hacker-stars">⭐⭐⭐⭐⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(4)">
+                    <span class="hacker-name">BerdarahBali</span>
+                    <span class="hacker-stars">⭐⭐⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(5)">
+                    <span class="hacker-name">KingLinux</span>
+                    <span class="hacker-stars">⭐⭐⭐⭐⭐⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(6)">
+                    <span class="hacker-name">ForYouMee</span>
+                    <span class="hacker-stars">⭐⭐⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(7)">
+                    <span class="hacker-name">BlackMamba</span>
+                    <span class="hacker-stars">⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(8)">
+                    <span class="hacker-name">SadBoy</span>
+                    <span class="hacker-stars">⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(9)">
+                    <span class="hacker-name">Mr.X</span>
+                    <span class="hacker-stars">⭐⭐⭐</span>
+                </li>
+                <li class="hacker-item" onclick="showProfile(10)">
+                    <span class="hacker-name">FoxsSkycler</span>
+                    <span class="hacker-stars">⭐⭐⭐⭐⭐</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Pemberitahuan Page -->
+        <div id="pemberitahuan" class="page">
+            <h2 class="page-title">PEMBERITAHUAN</h2>
+            <div class="notification-box">
+                <p>Disini kita kerja tim jika ada job 1 di ajak semua hasil di bagi sama rata tidak ada pandang bulu, yang udah jago dan bintang udah banyak ngajarin yang masih pemula baru join team ini.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✕</button>
+            <div id="profile-content"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        HackerIndonesia
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // SPA Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Profile data
+        const hackerProfiles = {
+            3: {
+                name: 'Mas-JawaFenn',
+                photo: 'https://share.google/tfUunoqJXLbWcCMVi',
+                bio: 'Hacker berasal dari indonesia, Pengerjaan:',
+                missions: [
+                    {
+                        name: 'Wah** Put** Pam******',
+                        description: 'Pengerjaan membekukan data base pribadi di dalam website, mengenkripsi data penting agar tidak di akses oleh siapapun maupun pihak web yang menciptakan. Nomial pengerjaan 7-10jt. Sudah berhasil di selesaikan misi tersebut✔️'
+                    },
+                    {
+                        name: 'Luk** Set*****',
+                        description: 'Pengerjaan memulihkan akun gmail beserta data pribadi yang punya gmail. Nominal pengerjaan 10jt. Sudah berhasil di selesaikan misi tersebut✔️'
+                    },
+                    {
+                        name: 'Dan* Anw**',
+                        description: 'Pengerjaan memulihkan akun Instagram.Nominal pengerjaan 500ribu. Sudah berhasil di selesaikan misi tersebut✔️'
+                    },
+                    {
+                        name: 'Els* Put**',
+                        description: 'Pengerjaan memulihkan akun instagram dan facebook. Nominal pengerjaan 1,5jt. Sudah berhasil di selesaikan misi tersebut✔️'
+                    }
+                ]
+            }
+        };
+
+        // Show profile function
+        function showProfile(id) {
+            const modal = document.getElementById('profile-modal');
+            const content = document.getElementById('profile-content');
+
+            if (id === 3 && hackerProfiles[3]) {
+                const profile = hackerProfiles[3];
+                let missionsHTML = '';
+                
+                profile.missions.forEach(mission => {
+                    missionsHTML += `
+                        <div class="mission">
+                            <h4>${mission.name}</h4>
+                            <p>${mission.description}</p>
+                        </div>
+                    `;
+                });
+
+                content.innerHTML = `
+                    <div class="profile-header">
+                        <img src="${profile.photo}" alt="${profile.name}" class="profile-photo">
+                        <div class="profile-name">${profile.name}</div>
+                    </div>
+                    <div class="profile-bio">
+                        <p>${profile.bio}</p>
+                        ${missionsHTML}
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="encrypted-msg">
+                        Bio data di enkripsi harap minta link bio kepada pihak tersebut
+                    </div>
+                `;
+            }
+
+            modal.classList.add('active');
+        }
+
+        // Close modal function
+        function closeModal() {
+            document.getElementById('profile-modal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('profile-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'profile-modal') {
+                closeModal();
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
